@@ -9,6 +9,9 @@ $('.plus-cart').click(function(){
         data: {
             prod_id: id
         },
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
         success: function(data) {
             console.log("data = ", data);
             eml.innerText = data.quantity;
@@ -33,6 +36,9 @@ $('.minus-cart').click(function(){
         data: {
             prod_id: id
         },
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
         success: function(data) {
             console.log("data = ", data);
             eml.innerText = data.quantity;
@@ -56,6 +62,9 @@ $('.remove-cart').click(function(){
         url: "/removecart/",
         data: {
             prod_id: id
+        },
+        headers: {
+            'X-CSRFToken': csrftoken
         },
         success: function(data) {
             
