@@ -49,9 +49,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'shopify.urls'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://nita-shopify-production.up.railway.app'
+]
+
 
 TEMPLATES = [
     {
