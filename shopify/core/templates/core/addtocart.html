@@ -1,0 +1,118 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Cart{% endblock title %}
+
+{% block main-content %}
+
+<style>
+    /* General Styles */
+.container {
+    max-width: 1200px;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Image Styles */
+.img-thumbnail {
+    border: none;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+.btn-outline-secondary, .btn-outline-danger {
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+}
+
+.btn-primary {
+    border-radius: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+    .img-fluid {
+        max-height: 200px;
+    }
+    .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+</style>
+<div class="container my-5">
+    <div class="row">
+        {% if cart %}
+        <h1 class="text-center mb-5">Shopping Cart</h1>
+        <div class="col-lg-8 col-md-12 mb-4">
+            <div class="card shadow-sm border-light">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Cart Items</h3>
+                    {% for item in cart %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4 col-md-3 text-center align-self-center">
+                            <img src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" class="img-fluid img-thumbnail" style="max-height: 150px; object-fit: cover;">
+                        </div>
+                        <div class="col-sm-8 col-md-9">
+                            <h5>{{ item.product.title }}</h5>
+                            <p class="text-muted small">{{ item.product.description }}</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <label for="quantity" class="mr-2">Quantity</label>
+                                <button class="btn btn-outline-secondary minus-cart" pid="{{ item.product.id }}"><i class="fas fa-minus-square fa-lg"></i></button>
+                                <span id="quantity" class="mx-2">{{ item.quantity }}</span>
+                                <button class="btn btn-outline-secondary plus-cart" pid="{{ item.product.id }}"><i class="fas fa-plus-square fa-lg"></i></button>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-outline-danger remove-cart" pid="{{ item.product.id }}">Remove Item</button>
+                                <p class="mb-0"><strong>Rs. {{ item.product.discounted_price }}</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+            <div class="card shadow-sm border-light">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Order Summary</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">Account <span id="amount">Rs. {{ amount }}</span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">Shipping <span>Rs. 40.00</span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                            <strong>Total</strong> <small>(including GST)</small> <span id="totalamount"><strong>Rs. {{ totalamount }}</strong></span>
+                        </li>
+                    </ul>
+                    <div class="d-grid mt-4">
+                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Place Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <h1 class="text-center mb-5">Cart is Empty</h1>
+        {% endif %}
+    </div>
+</div>
+{% endblock main-content %}

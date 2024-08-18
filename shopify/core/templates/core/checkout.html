@@ -1,0 +1,104 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Checkout{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-danger" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12 mb-4">
+            <h4>Order Summary</h4>
+            <hr>
+            {% for item in cart_items %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.product.title }}</h5>
+                    <p class="card-text">Quantity: {{ item.quantity }}</p>
+                    <p class="fw-bold">Price: Rs. {{ item.product.discounted_price }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <p class="fw-bold">Total Cost + Rs. 40 = Rs. {{ totalamount }}</p>
+            <small class="text-muted">Terms and Conditions: No return or exchange after 2 days of ordering.</small>
+        </div>
+
+        <div class="col-lg-4 col-md-12 offset-lg-1">
+            <h4>Select Shipping Address</h4>
+            <hr>
+            <form action="" method="post" id="myform">
+                {% csrf_token %}
+                {% for ad in add %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ad.name }}</h5>
+                        <p class="card-text">Mobile: {{ ad.mobile }}</p>
+                        <p class="card-text">{{ ad.hostel }}, {{ ad.city }}, {{ ad.state }} - {{ ad.zipcode }}</p>
+                        <div class="form-check mt-3">
+                            <input type="radio" class="form-check-input" name="custid" id="custadd{{ forloop.counter }}" value="{{ ad.id }}">
+                            <label for="custadd{{ forloop.counter }}" class="form-check-label fw-bold">
+                                Select this address
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="form-group mb-3">
+                    <label for="totalamount" class="form-label">Total Amount</label>
+                    <input type="number" class="form-control" name="totamount" value="{{ totalamount }}" readonly>
+                </div>
+
+                <div class="text-end">
+                    <button id="rzp-button1" type="submit" class="btn btn-primary btn-lg">Proceed to Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}
+
+{% block payment-gateway %}
+<script>
+    var options = {
+        "key": "YOUR_KEY_ID",
+        "amount": "{{ totalamount }}00", // Amount is in paise, so multiply by 100
+        "currency": "INR",
+        "name": "Your Store Name",
+        "description": "Order Payment",
+        "image": "https://example.com/your_logo",
+        "order_id": "{{ order_id }}", // Obtain this from the server-side
+        "handler": function (response){
+            alert("Payment ID: " + response.razorpay_payment_id);
+            alert("Order ID: " + response.razorpay_order_id);
+            alert("Signature: " + response.razorpay_signature);
+        },
+        "prefill": {
+            "name": "{{ user.first_name }} {{ user.last_name }}",
+            "email": "{{ user.email }}",
+            "contact": "{{ user.profile.phone_number }}"
+        },
+        "notes": {
+            "address": "{{ user.profile.address }}"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        alert("Payment failed due to: " + response.error.reason);
+    });
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock payment-gateway %}
